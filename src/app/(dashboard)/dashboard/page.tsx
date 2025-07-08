@@ -1,6 +1,7 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -21,6 +22,8 @@ export default function DashboardPage() {
   const handleLogout = () => {
     signOut({ callbackUrl: '/' });
   };
+
+  const userGreeting = session?.user?.name || session?.user?.email || 'there';
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-blue-300">
@@ -46,19 +49,25 @@ export default function DashboardPage() {
         <aside className="w-64 bg-black border-r border-blue-900 p-6 hidden md:block">
           <h2 className="text-xl font-bold mb-6">Navigation</h2>
           <ul className="space-y-4 text-sm">
-            <li className="hover:text-blue-400 cursor-pointer">Overview</li>
-            <li className="hover:text-blue-400 cursor-pointer">Connections</li>
-            <li className="hover:text-blue-400 cursor-pointer">Logs</li>
-            <li className="hover:text-blue-400 cursor-pointer">Settings</li>
+            <li>
+              <Link href="/dashboard" className="hover:text-blue-400">Overview</Link>
+            </li>
+            <li>
+              <Link href="/connections" className="hover:text-blue-400">Connections</Link>
+            </li>
+            <li>
+              <Link href="/dashboard/logs" className="hover:text-blue-400">Logs</Link>
+            </li>
+            <li>
+              <Link href="/dashboard/settings" className="hover:text-blue-400">Settings</Link>
+            </li>
           </ul>
         </aside>
 
         {/* Main */}
         <main className="flex-1 p-10">
-          <h1 className="text-3xl font-bold text-white mb-4">Welcome back 👋</h1>
-          <p className="text-lg">
-            Logged in as <span className="font-mono">{session?.user?.email}</span>
-          </p>
+          <h1 className="text-3xl font-bold text-white mb-4">Hello, {userGreeting} 👋</h1>
+
           <p className="text-sm text-blue-400 mt-1">
             Role: <strong className="uppercase">{session?.user?.role ?? 'USER'}</strong>
           </p>

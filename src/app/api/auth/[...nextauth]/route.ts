@@ -1,4 +1,3 @@
-// app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -7,11 +6,11 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 
-export const authOptions = {
+const authOptions = {
 	adapter: PrismaAdapter(prisma),
 	providers: [
 		CredentialsProvider({
-			name: "Email and Password",
+			name: "credentials",
 			credentials: {
 				email: { label: "Email", type: "email" },
 				password: { label: "Password", type: "password" },
@@ -28,7 +27,14 @@ export const authOptions = {
 				const isValid = await compare(credentials.password, user.password);
 				if (!isValid) return null;
 
-				return user;
+				// Return user object - make sure id is a string for NextAuth
+				return {
+					id: user.id.toString(),
+					email: user.email,
+					name: user.name,
+					image: user.image,
+					role: user.role,
+				};
 			},
 		}),
 		GoogleProvider({
@@ -40,11 +46,23 @@ export const authOptions = {
 			clientSecret: process.env.GITHUB_CLIENT_SECRET!,
 		}),
 	],
+	session: {
+		strategy: "jwt", // Change to JWT for credentials provider compatibility
+	},
 	callbacks: {
-		async session({ session, user }) {
-			if (session.user) {
-				session.user.id = user.id;
-				session.user.role = user.role;
+		async jwt({ token, user }) {
+			// Add user info to JWT token
+			if (user) {
+				token.role = user.role;
+				token.id = user.id;
+			}
+			return token;
+		},
+		async session({ session, token }) {
+			// Add user info to session
+			if (token && session.user) {
+				session.user.id = token.id;
+				session.user.role = token.role;
 			}
 			return session;
 		},
@@ -53,16 +71,13 @@ export const authOptions = {
 			return `${baseUrl}/dashboard`;
 		},
 	},
-	session: {
-		strategy: "database", // Use database sessions for better security
-	},
 	pages: {
 		signIn: "/login",
 		error: "/login",
 	},
 	secret: process.env.NEXTAUTH_SECRET,
+	debug: process.env.NODE_ENV === "development", // Add debug logging
 };
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-
