@@ -1,16 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Send to API route (we'll build this next)
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -18,48 +19,55 @@ export default function SignUpPage() {
     });
 
     if (res.ok) {
-      alert('Account created. Please log in.');
-      setEmail('');
-      setPassword('');
+      // Automatically sign in after successful signup
+      const signInResult = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (signInResult?.ok) {
+        router.push('/dashboard');
+      } else {
+        alert('Error signing in after signup.');
+      }
     } else {
-      const { message } = await res.json();
-      alert(`Error: ${message}`);
+      const errorData = await res.json();
+      alert(errorData.message || 'Signup failed.');
     }
   };
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-[#a3d8ff] flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-[#111] border border-[#2a2a2a] rounded-xl p-8 shadow-lg">
-        <h1 className="text-3xl font-bold mb-6 text-center">Create Your Account</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <h1 className="text-3xl font-bold mb-6 text-center">Sign Up</h1>
+        <form onSubmit={handleSignUp} className="space-y-4">
           <div>
-            <label className="block mb-1 text-sm" htmlFor="email">
+            <label htmlFor="email" className="block mb-1 text-sm">
               Email
             </label>
             <input
               id="email"
               type="email"
-              className="w-full px-4 py-2 bg-black border border-[#a3d8ff] rounded text-white focus:outline-none focus:ring-2 focus:ring-[#7dcaff]"
+              className="w-full px-4 py-2 bg-black border border-[#a3d8ff] rounded text-white"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-
           <div>
-            <label className="block mb-1 text-sm" htmlFor="password">
+            <label htmlFor="password" className="block mb-1 text-sm">
               Password
             </label>
             <input
               id="password"
               type="password"
-              className="w-full px-4 py-2 bg-black border border-[#a3d8ff] rounded text-white focus:outline-none focus:ring-2 focus:ring-[#7dcaff]"
+              className="w-full px-4 py-2 bg-black border border-[#a3d8ff] rounded text-white"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-
           <button
             type="submit"
             className="w-full py-2 bg-[#a3d8ff] text-black font-semibold rounded hover:bg-[#7dcaff] transition"
@@ -68,12 +76,35 @@ export default function SignUpPage() {
           </button>
         </form>
 
-        <p className="text-sm text-center mt-6 text-[#7ab5e6]">
-          Already have an account?{' '}
-          <Link href="/login" className="underline underline-offset-4">
-            Log in
-          </Link>
-        </p>
+        <div className="mt-6 text-center text-sm text-[#7ab5e6]">
+          <p className="mb-2">Or sign up with:</p>
+          <div className="flex justify-center gap-6">
+            <button
+              onClick={() => signIn('google')}
+              aria-label="Sign up with Google"
+              className="transition transform hover:scale-110"
+            >
+              <img
+                src="/icons/google.svg"
+                alt="Google logo"
+                className="h-8 w-8"
+                draggable={false}
+              />
+            </button>
+            <button
+              onClick={() => signIn('github')}
+              aria-label="Sign up with GitHub"
+              className="transition transform hover:scale-110"
+            >
+              <img
+                src="/icons/github.svg"
+                alt="GitHub logo"
+                className="h-8 w-8"
+                draggable={false}
+              />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
