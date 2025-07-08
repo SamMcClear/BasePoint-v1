@@ -191,7 +191,8 @@ For support, please open an issue on GitHub or contact the maintainers.
 
 
 - **Feel free to contribute or open issues!**
-- **Made with ❤️ by Sam McClear**
+
+Made with ❤️ by Sam McClear
 
 [![Follow on X](https://img.shields.io/badge/X-Follow%20%40Sir0xFF-1DA1F2?style=for-the-badge&logo=twitter)](https://x.com/Sir0xFF)
 
