@@ -100,7 +100,7 @@ NODE_ENV="development"
 
 ```
 BasePoint-v1/
-├── app/                    # Next.js 13+ App Router
+├── app/                    # Next.js 15+ App Router
 │   ├── api/               # API routes
 │   │   ├── auth/         # NextAuth.js authentication
 │   │   ├── connections/  # Database connection management
@@ -188,3 +188,10 @@ For support, please open an issue on GitHub or contact the maintainers.
 ---
 
 **BasePoint DB** - Making multi-database management simple and secure.
+
+``` bash
+Feel free to contribute or open issues!
+Made with ❤️ by Sam McClear.
+```
+[![Follow on X](https://img.shields.io/badge/X-Follow%20%40Sir0xFF-1DA1F2?style=for-the-badge&logo=twitter)](https://x.com/Sir0xFF)
+
