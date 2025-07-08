@@ -32,7 +32,7 @@ export default function LoginPage() {
         <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1 text-sm" htmlFor="email">
+            <label htmlFor="email" className="block mb-1 text-sm">
               Email
             </label>
             <input
@@ -45,7 +45,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block mb-1 text-sm" htmlFor="password">
+            <label htmlFor="password" className="block mb-1 text-sm">
               Password
             </label>
             <input
@@ -65,14 +65,32 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 space-y-2 text-center text-sm text-[#7ab5e6]">
-          <p>Or continue with:</p>
-          <div className="flex gap-4 justify-center">
-            <button onClick={() => signIn('google')} className="underline">
-              Google
+        <div className="mt-6 text-center text-sm text-[#7ab5e6]">
+          <p className="mb-2">Or continue with:</p>
+          <div className="flex justify-center gap-6">
+            <button
+              onClick={() => signIn('google')}
+              aria-label="Sign in with Google"
+              className="transition transform hover:scale-110"
+            >
+              <img
+                src="/icons/google.svg"
+                alt="Google logo"
+                className="h-8 w-8"
+                draggable={false}
+              />
             </button>
-            <button onClick={() => signIn('github')} className="underline">
-              GitHub
+            <button
+              onClick={() => signIn('github')}
+              aria-label="Sign in with GitHub"
+              className="transition transform hover:scale-110"
+            >
+              <img
+                src="/icons/github.svg"
+                alt="GitHub logo"
+                className="h-8 w-8"
+                draggable={false}
+              />
             </button>
           </div>
         </div>
