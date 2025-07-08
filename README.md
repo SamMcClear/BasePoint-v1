@@ -179,7 +179,8 @@ BasePoint uses Prisma ORM with the following main models:
 
 ## License
 
-TBD
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 
 ## Support
 
