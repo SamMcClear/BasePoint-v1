@@ -27,9 +27,9 @@ const authOptions = {
 				const isValid = await compare(credentials.password, user.password);
 				if (!isValid) return null;
 
-				// Return user object - make sure id is a string for NextAuth
+				// ✅ Return the user object with id as a number for NextAuth compatibility
 				return {
-					id: user.id.toString(),
+					id: user.id,
 					email: user.email,
 					name: user.name,
 					image: user.image,
@@ -47,27 +47,24 @@ const authOptions = {
 		}),
 	],
 	session: {
-		strategy: "jwt", // Change to JWT for credentials provider compatibility
+		strategy: "jwt" as const, // JWT required for credentials provider
 	},
 	callbacks: {
-		async jwt({ token, user }) {
-			// Add user info to JWT token
+		async jwt({ token, user }: { token: any; user?: any }) {
 			if (user) {
-				token.role = user.role;
 				token.id = user.id;
+				token.role = user.role;
 			}
 			return token;
 		},
-		async session({ session, token }) {
-			// Add user info to session
+		async session({ session, token }: { session: any; token: any }) {
 			if (token && session.user) {
 				session.user.id = token.id;
 				session.user.role = token.role;
 			}
 			return session;
 		},
-		async redirect({ url, baseUrl }) {
-			// Redirect all sign-ins to dashboard
+		async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
 			return `${baseUrl}/dashboard`;
 		},
 	},
@@ -76,8 +73,9 @@ const authOptions = {
 		error: "/login",
 	},
 	secret: process.env.NEXTAUTH_SECRET,
-	debug: process.env.NODE_ENV === "development", // Add debug logging
+	debug: process.env.NODE_ENV === "development",
 };
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+
