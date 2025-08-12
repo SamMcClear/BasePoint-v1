@@ -7,9 +7,58 @@ export async function GET(req: Request) {
 
   const results = await prisma.connection.findMany({
     where: {
-      name: {
-        contains: q || '',
-        mode: 'insensitive',
+      OR: [
+        // Search by connection name
+        {
+          name: {
+            contains: q || '',
+            mode: 'insensitive',
+          },
+        },
+        // Search by owner name
+        {
+          owner: {
+            name: {
+              contains: q || '',
+              mode: 'insensitive',
+            },
+          },
+        },
+        // Search by owner email
+        {
+          owner: {
+            email: {
+              contains: q || '',
+              mode: 'insensitive',
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      sharedWith: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          sharedWith: true,
+        },
       },
     },
     orderBy: { createdAt: 'desc' },
